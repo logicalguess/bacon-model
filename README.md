@@ -5,6 +5,8 @@ Bacon.Model Form example
 
 Inspired by: [Bacon Form Example](https://github.com/nnarhinen/bacon-form-example)
 
+Shows how to use an Enum ([https://github.com/timheap/enum](https://github.com/timheap/enum)) for model field names.
+
 Also demonstrates how to use pre-compiled Handlebars templates with browserify.
 
 Building
