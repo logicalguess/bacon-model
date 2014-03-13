@@ -20,19 +20,21 @@ It will create `dist/app.js`
 Code
 ----
 
-        var CustomerFields = new Enum(['name', 'email']);
+        var CustomerFields = new Enum(['name', 'email']); //TODO add type
 
         ...
 
-        var name = Bacon.$.textFieldValue(this.element.find('input[name=' + CustomerFields.name.getName() + ']'));
-        name.assign(this.element.find('h1.customer-name'), 'text');
-
-        var email = Bacon.$.textFieldValue(this.element.find('input[name=' + CustomerFields.email.getName() + ']'));
-
-        //var model = Bacon.Model.combine({name: name, email: email});
         var model = Bacon.Model({});
-        model.lens(CustomerFields.name.getName()).bind(name);
-        model.lens(CustomerFields.email.getName()).bind(email);
+        CustomerFields.getValues().forEach(function(field) {
+            var fieldName = field.getName();
+            var input = Bacon.$.textFieldValue(elem.find('input[name=' + fieldName + ']'));
+
+            model.lens(fieldName).bind(input);
+
+            if (fieldName === 'name') {
+               input.assign(elem.find('h1.customer-name'), 'text');
+            }
+        });
 
         var save = Bacon.fromEventTarget(this.element.find('button[type="submit"]'), "click")
             .doAction(".preventDefault");
