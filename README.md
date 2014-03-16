@@ -76,6 +76,12 @@ Code
                     selector: 'button[type="submit"]',
                     eventType: 'click'
                 }
+            },
+            reset: {
+                target: {
+                     selector: '.button.reset',
+                     eventType: 'click'
+                }
             }
         });
 
@@ -85,6 +91,7 @@ Code
 
         var eventStreams = createEventStreams(this.element, CustomerEvents);
         var save = eventStreams['save'];
+        var reset = eventStreams['reset'];
 
         var request = Bacon.combineTemplate({customer: model});
         var submits = request.sampledBy(save)
@@ -94,4 +101,8 @@ Code
 
         submits.onValue(_.bind(function (res) {
             $('.dummy-api').append('<p>API Response <pre>' + JSON.stringify(res) + '</pre></p>');
+        }, this));
+
+        reset.onValue(_.bind(function (ev) {
+            this.render();
         }, this));

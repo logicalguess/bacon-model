@@ -1868,6 +1868,15 @@ function createModel(elem, interactionConfig) {
     return model;
 }
 
+function createEventStreams(elem, eventConfig) {
+    var streams = {};
+    eventConfig.getValues().forEach(function (event) {
+        streams[event.getName()] = Bacon.fromEventTarget(elem.find(event.target.selector), event.target.eventType)
+            .doAction(".preventDefault");
+    });
+    return streams;
+}
+
 var BindingTypes = new Enum(['textField', 'checkBox', 'select', 'radioGroup', 'checkBoxGroup']);
 var CustomerInteractions = new Enum({
     name: {
@@ -1891,23 +1900,39 @@ var CustomerInteractions = new Enum({
     }
 });
 
+var CustomerEvents = new Enum({
+    save: {
+        target: {
+            selector: 'button[type="submit"]',
+            eventType: 'click'
+        }
+    },
+    reset: {
+        target: {
+            selector: '.button.reset',
+            eventType: 'click'
+        }
+    }
+});
+
 var CustomerView = module.exports = function CustomerView(data) {
     this.model = data;
+    this.element = $('<div />')
 
-    this.element = $('<div />').on('click', '.button.reset', _.bind(function (ev) {
-        ev.preventDefault();
-        this.render();
-    }, this));
+//    this.element = $('<div />').on('click', '.button.reset', _.bind(function (ev) {
+//        ev.preventDefault();
+//        this.render();
+//    }, this));
 
     this.render();
 
     var model = createModel(this.element, CustomerInteractions);
 
-    var save = Bacon.fromEventTarget(this.element.find('button[type="submit"]'), "click")
-        .doAction(".preventDefault");
+    var eventStreams = createEventStreams(this.element, CustomerEvents);
+    var save = eventStreams['save'];
+    var reset = eventStreams['reset'];
 
     var request = Bacon.combineTemplate({customer: model});
-
     var submits = request.sampledBy(save)
         .flatMapLatest(function (req) {
             return Bacon.fromPromise(api.persistCustomer(req));
@@ -1920,6 +1945,10 @@ var CustomerView = module.exports = function CustomerView(data) {
     submits.onError(function (err) {
         console.error('Failed to persist customer');
     });
+
+    reset.onValue(_.bind(function (ev) {
+        this.render();
+    }, this));
 };
 
 CustomerView.prototype.render = function () {

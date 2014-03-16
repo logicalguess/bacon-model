@@ -61,16 +61,23 @@ var CustomerEvents = new Enum({
             selector: 'button[type="submit"]',
             eventType: 'click'
         }
+    },
+    reset: {
+        target: {
+            selector: '.button.reset',
+            eventType: 'click'
+        }
     }
 });
 
 var CustomerView = module.exports = function CustomerView(data) {
     this.model = data;
+    this.element = $('<div />')
 
-    this.element = $('<div />').on('click', '.button.reset', _.bind(function (ev) {
-        ev.preventDefault();
-        this.render();
-    }, this));
+//    this.element = $('<div />').on('click', '.button.reset', _.bind(function (ev) {
+//        ev.preventDefault();
+//        this.render();
+//    }, this));
 
     this.render();
 
@@ -78,6 +85,7 @@ var CustomerView = module.exports = function CustomerView(data) {
 
     var eventStreams = createEventStreams(this.element, CustomerEvents);
     var save = eventStreams['save'];
+    var reset = eventStreams['reset'];
 
     var request = Bacon.combineTemplate({customer: model});
     var submits = request.sampledBy(save)
@@ -92,6 +100,10 @@ var CustomerView = module.exports = function CustomerView(data) {
     submits.onError(function (err) {
         console.error('Failed to persist customer');
     });
+
+    reset.onValue(_.bind(function (ev) {
+        this.render();
+    }, this));
 };
 
 CustomerView.prototype.render = function () {
