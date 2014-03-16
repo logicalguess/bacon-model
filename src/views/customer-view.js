@@ -74,11 +74,6 @@ var CustomerView = module.exports = function CustomerView(data) {
     this.model = data;
     this.element = $('<div />')
 
-//    this.element = $('<div />').on('click', '.button.reset', _.bind(function (ev) {
-//        ev.preventDefault();
-//        this.render();
-//    }, this));
-
     this.render();
 
     var model = createModel(this.element, CustomerInteractions);
