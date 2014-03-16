@@ -1848,19 +1848,19 @@ var tmpl = require('./templates/customer.hbs'),
     api = require('../api'),
     _ = require('underscore');
 
-function createModel(elem, interactionConfig) {
+function createModel(elem, dataSpec) {
     var model = Bacon.Model({});
-    interactionConfig.getValues().forEach(function (interaction) {
-        var interactionName = interaction.getName();
-        if (interaction.from) {
-            var selector = interaction.from.selector || interaction.from.elemType + '[name=' + interactionName + ']';
-            var field = Bacon.$[interaction.from.bindingType + 'Value'](elem.find(selector));
-            model.lens(interactionName).bind(field);
+    dataSpec.getValues().forEach(function (field) {
+        var fieldName = field.getName();
+        if (field.from) {
+            var selector = field.from.selector || field.from.elemType + '[name=' + fieldName + ']';
+            var fieldStream = Bacon.$[field.from.bindingType + 'Value'](elem.find(selector));
+            model.lens(fieldName).bind(fieldStream);
         }
 
-        if (interaction.to) {
-            interaction.to.forEach(function (listener) {
-                var fld = listener.formatter ? field.map(listener.formatter) : field;
+        if (field.to) {
+            field.to.forEach(function (listener) {
+                var fld = listener.formatter ? fieldStream.map(listener.formatter) : fieldStream;
                 fld.assign(elem.find(listener.selector), listener.attr);
             });
         }
@@ -1868,9 +1868,9 @@ function createModel(elem, interactionConfig) {
     return model;
 }
 
-function createEventStreams(elem, eventConfig) {
+function createEventStreams(elem, eventSpec) {
     var streams = {};
-    eventConfig.getValues().forEach(function (event) {
+    eventSpec.getValues().forEach(function (event) {
         streams[event.getName()] = Bacon.fromEventTarget(elem.find(event.target.selector), event.target.eventType)
             .doAction(".preventDefault");
     });
