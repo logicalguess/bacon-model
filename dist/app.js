@@ -1852,14 +1852,14 @@ function createModel(elem, dataSpec) {
     var model = Bacon.Model({});
     dataSpec.getValues().forEach(function (field) {
         var fieldName = field.getName();
-        if (field.from) {
-            var selector = field.from.selector || field.from.elemType + '[name=' + fieldName + ']';
-            var fieldStream = Bacon.$[field.from.bindingType + 'Value'](elem.find(selector));
+        if (field.source) {
+            var selector = field.source.selector || field.source.elemType + '[name=' + fieldName + ']';
+            var fieldStream = Bacon.$[field.source.bindingType + 'Value'](elem.find(selector));
             model.lens(fieldName).bind(fieldStream);
         }
 
-        if (field.to) {
-            field.to.forEach(function (listener) {
+        if (field.listeners) {
+            field.listeners.forEach(function (listener) {
                 var fld = listener.formatter ? fieldStream.map(listener.formatter) : fieldStream;
                 fld.assign(elem.find(listener.selector), listener.attr);
             });
@@ -1880,11 +1880,11 @@ function createEventStreams(elem, eventSpec) {
 var BindingTypes = new Enum(['textField', 'checkBox', 'select', 'radioGroup', 'checkBoxGroup']);
 var CustomerDataSpec = new Enum({
     name: {
-        from: {
+        source: {
             elemType: 'input',
             bindingType: BindingTypes.textField
         },
-        to: [{
+        listeners: [{
             selector: 'h1.customer-name',
             attr: 'text',
             formatter: function(value) {
@@ -1893,7 +1893,7 @@ var CustomerDataSpec = new Enum({
         }]
     },
     email: {
-        from: {
+        source: {
             elemType: 'input',
             bindingType: BindingTypes.textField
         }
