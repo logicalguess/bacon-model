@@ -33,7 +33,7 @@ function createEventStreams(elem, eventConfig) {
 }
 
 var BindingTypes = new Enum(['textField', 'checkBox', 'select', 'radioGroup', 'checkBoxGroup']);
-var CustomerInteractions = new Enum({
+var CustomerDataSpec = new Enum({
     name: {
         from: {
             elemType: 'input',
@@ -55,7 +55,7 @@ var CustomerInteractions = new Enum({
     }
 });
 
-var CustomerEvents = new Enum({
+var CustomerEventSpec = new Enum({
     save: {
         target: {
             selector: 'button[type="submit"]',
@@ -72,13 +72,13 @@ var CustomerEvents = new Enum({
 
 var CustomerView = module.exports = function CustomerView(data) {
     this.model = data;
-    this.element = $('<div />')
+    this.element = $('<div />');
 
     this.render();
 
-    var model = createModel(this.element, CustomerInteractions);
+    var model = createModel(this.element, CustomerDataSpec);
 
-    var eventStreams = createEventStreams(this.element, CustomerEvents);
+    var eventStreams = createEventStreams(this.element, CustomerEventSpec);
     var save = eventStreams['save'];
     var reset = eventStreams['reset'];
 

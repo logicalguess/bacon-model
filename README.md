@@ -48,7 +48,7 @@ Code
             return streams;
         }
 
-        var CustomerInteractions = new Enum({
+        var CustomerDataSpec = new Enum({
             name: {
                 from: {
                     elemType: 'input',
@@ -70,7 +70,7 @@ Code
             }
         });
 
-        var CustomerEvents = new Enum({
+        var CustomerEventSpec = new Enum({
             save: {
                 target: {
                     selector: 'button[type="submit"]',
@@ -87,9 +87,9 @@ Code
 
         ...
 
-        var model = createModel(this.element, CustomerInteractions);
+        var model = createModel(this.element, CustomerDataSpec);
 
-        var eventStreams = createEventStreams(this.element, CustomerEvents);
+        var eventStreams = createEventStreams(this.element, CustomerEventSpec);
         var save = eventStreams['save'];
         var reset = eventStreams['reset'];
 
