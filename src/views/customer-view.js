@@ -32,6 +32,12 @@ function createEventStreams(elem, eventSpec) {
     return streams;
 }
 
+function getCurrentValue(stream, cb) {
+    stream.sampledBy(Bacon.once()).onValue(function(val) {
+        cb(val);
+    });
+}
+
 var BindingTypes = new Enum(['textField', 'checkBox', 'select', 'radioGroup', 'checkBoxGroup']);
 var CustomerDataSpec = new Enum({
     name: {
@@ -99,7 +105,15 @@ var CustomerView = module.exports = function CustomerView(data) {
     reset.onValue(_.bind(function (ev) {
         this.render();
     }, this));
+
+
+    Bacon.repeatedly(1000, []).take(10).onValue(function(){
+        getCurrentValue(request, function(request){
+            console.log('Current value', request.customer.name);
+        });
+    });
 };
+
 
 CustomerView.prototype.render = function () {
     this.element.html(tmpl(this.model));
