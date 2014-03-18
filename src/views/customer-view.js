@@ -33,9 +33,7 @@ function createEventStreams(elem, eventSpec) {
 }
 
 function getCurrentValue(stream, cb) {
-    stream.sampledBy(Bacon.once()).onValue(function(val) {
-        cb(val);
-    });
+    stream.sampledBy(Bacon.once()).take(1).onValue(cb);
 }
 
 var BindingTypes = new Enum(['textField', 'checkBox', 'select', 'radioGroup', 'checkBoxGroup']);
